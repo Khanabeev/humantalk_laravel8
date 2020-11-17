@@ -17,7 +17,7 @@ class CreatePostsTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->default('post');
-            $table->string('status')->nullable()->default('draft');
+            $table->unsignedTinyInteger('status')->nullable()->default(0)->comment('published==1, draft==2');
             $table->unsignedInteger('mark')->nullable()->comment('Level of importance of post');
             $table->string('lg_image')->nullable();
             $table->string('md_image')->nullable();
@@ -29,7 +29,6 @@ class CreatePostsTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->text('description')->nullable();
             $table->text('content')->nullable();
-            $table->boolean('is_published')->default(false);
             $table->timestamps();
 
             $table->foreign('user_id')

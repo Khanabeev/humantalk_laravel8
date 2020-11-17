@@ -25,7 +25,7 @@ class PostFactory extends Factory
         return [
             'title' => $this->faker->sentence(4),
             'slug' => $this->faker->slug(3),
-            'status' => 'published',
+            'status' => $this->faker->numberBetween(1,2),// published==1, draft==2
             'mark' => $this->faker->numberBetween(1, 5),
             'lg_image' => 'https://picsum.photos/1200/800',
             'md_image' => 'https://picsum.photos/700/467',
@@ -37,7 +37,6 @@ class PostFactory extends Factory
             'user_id' => User::inRandomOrder()->first()->id,
             'description' => $this->faker->realText(100, 2),
             'content' => $this->faker->realText(1000, 2),
-            'is_published' => true
         ];
     }
 }
