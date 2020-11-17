@@ -22,7 +22,6 @@ class PageController extends Controller
 
     public function index()
     {
-        Cache::flush();
         return view('index', [
             'mainPost' => $this->postRepository->getOneByMark(config('constants.post.mark.main')),
             'secondaryPost1' => $this->postRepository->getOneByMark(config('constants.post.mark.secondary-1')),
@@ -31,6 +30,29 @@ class PageController extends Controller
             'last3PostsInEachCategory' => $this->postRepository->getLatestPostsInCategories(3),
             'allPosts' => $this->postRepository->getAllPostsWithPagination(5),
             'choose3Post' => $this->postRepository->getInteresting(3)
+        ]);
+    }
+
+    public function post($slug)
+    {
+        $post = $this->postRepository->getBySlug($slug);
+
+        //Получаем предыдущий пост
+        $previousPost = $this->postRepository->getPreviousPost($post->id);
+        // Получаем следующий пост
+        $nextPost = $this->postRepository->getNextPost($post->id);
+
+        // Получаем 3 поста связанных тегом
+        $tags = $post->tag->modelKeys();
+        $relatedPosts = Post::whereHas('tag', function ($q) use ($tags) {
+            $q->whereIn('tags.id', $tags);
+        })->where('id', '<>', $post->id)->limit(3)->get();
+
+        return view('pages.blog_post', [
+            'post'=> $post,
+            'previousPost' => $previousPost,
+            'nextPost' => $nextPost,
+            'relatedPosts' => $relatedPosts
         ]);
     }
 

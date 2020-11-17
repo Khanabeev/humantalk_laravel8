@@ -10,6 +10,9 @@ interface PostRepositoryInterface
 {
     public function all();
     public function getByUser(User $user);
+    public function getBySlug($slug);
+    public function getNextPost($post_id);
+    public function getPreviousPost($post_id);
     public function getOneByMark($mark);
     public function getLatestPosts($limit);
     public function getLatestPostsInCategories($limit);
