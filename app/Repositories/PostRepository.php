@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
+use phpDocumentor\Reflection\Types\Mixed_;
 
 class PostRepository implements PostRepositoryInterface
 {
@@ -67,7 +68,6 @@ class PostRepository implements PostRepositoryInterface
         });
     }
 
-
     public function getLatestPostsInCategories($limit): Collection
     {
         return Cache::remember('latest_posts_by_categories.limit.' . $limit, $this->ttl, function () use ($limit) {
@@ -111,5 +111,37 @@ class PostRepository implements PostRepositoryInterface
                 ->sortByDesc('views')
                 ->take($limit);
         });
+    }
+
+    public function getBySlug($slug): Post
+    {
+        return Cache::remember('post.slug.' . $slug, $this->ttl, function () use ($slug) {
+            $post = Post::where('slug', $slug)->firstOrFail();
+            $post->update(['views' => $post->views + 1]);
+            return $post;
+        });
+    }
+
+    public function getNextPost($post_id)
+    {
+        return Cache::remember('post.next.' . $post_id, $this->ttl, function () use ($post_id) {
+            return Post::where('id', '>', $post_id)->orderBy('id')->first();
+        });
+
+    }
+
+    public function getPreviousPost($post_id)
+    {
+        return Cache::remember('post.previous.' . $post_id, $this->ttl, function () use ($post_id) {
+            return Post::where('id', '<', $post_id)->orderByDesc('id')->first();
+        });
+    }
+
+    public function getRelatedPosts($post)
+    {
+        $tags = $post->tag->modelKeys();
+        return Post::whereHas('tag', function ($q) use ($tags) {
+            $q->whereIn('tags.id', $tags);
+        })->where('id', '<>', $post->id)->limit(3)->get();
     }
 }

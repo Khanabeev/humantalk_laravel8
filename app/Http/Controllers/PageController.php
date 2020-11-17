@@ -22,7 +22,6 @@ class PageController extends Controller
 
     public function index()
     {
-        Cache::flush();
         return view('index', [
             'mainPost' => $this->postRepository->getOneByMark(config('constants.post.mark.main')),
             'secondaryPost1' => $this->postRepository->getOneByMark(config('constants.post.mark.secondary-1')),
@@ -31,6 +30,18 @@ class PageController extends Controller
             'last3PostsInEachCategory' => $this->postRepository->getLatestPostsInCategories(3),
             'allPosts' => $this->postRepository->getAllPostsWithPagination(5),
             'choose3Post' => $this->postRepository->getInteresting(3)
+        ]);
+    }
+
+    public function post($slug)
+    {
+        $post = $this->postRepository->getBySlug($slug);
+
+        return view('pages.blog_post', [
+            'post'=> $post,
+            'previousPost' => $this->postRepository->getPreviousPost($post->id),
+            'nextPost' => $this->postRepository->getNextPost($post->id),
+            'relatedPosts' => $this->postRepository->getRelatedPosts($post)
         ]);
     }
 

@@ -10,6 +10,10 @@ class Post extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'views'
+    ];
+
     public function category()
     {
         return $this->belongsToMany(Category::class, 'category_post');
