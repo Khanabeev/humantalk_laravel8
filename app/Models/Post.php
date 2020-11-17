@@ -25,17 +25,4 @@ class Post extends Model
         return $this->belongsToMany(Tag::class, 'post_tag');
     }
 
-    public function getPostByMark($mark): self
-    {
-        if (!in_array($mark, \config('constants.post.mark')))
-            $mark = \config('constants.post.mark.interesting');
-
-        $mainPost = Post::where('mark', Config::get('constants.post.mark.' . $mark))
-            ->where('status', Config::get('constants.post.status.published'))->first();
-        if (empty($mainPost)) {
-            return Post::all()
-                ->where('status', Config::get('constants.post.status.published'))->random();
-        }
-        return $mainPost ?? Post::inRandomOrder()->first();
-    }
 }

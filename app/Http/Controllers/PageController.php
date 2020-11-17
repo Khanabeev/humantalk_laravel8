@@ -9,7 +9,8 @@ class PageController extends Controller
 {
     public function index()
     {
-        dd((new Post)->getPostByMark('main'));
+        $post = new Post();
+
 
     }
 
