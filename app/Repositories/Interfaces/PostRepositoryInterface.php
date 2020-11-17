@@ -19,4 +19,5 @@ interface PostRepositoryInterface
     public function getInteresting($limit);
     public function getAllPostsWithPagination($postsPerPage);
     public function getMostPopularPosts($limit);
+    public function getRelatedPosts($post_id);
 }

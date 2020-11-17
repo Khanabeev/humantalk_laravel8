@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
+use phpDocumentor\Reflection\Types\Mixed_;
 
 class PostRepository implements PostRepositoryInterface
 {
@@ -121,7 +122,7 @@ class PostRepository implements PostRepositoryInterface
         });
     }
 
-    public function getNextPost($post_id): Post
+    public function getNextPost($post_id)
     {
         return Cache::remember('post.next.' . $post_id, $this->ttl, function () use ($post_id) {
             return Post::where('id', '>', $post_id)->orderBy('id')->first();
@@ -129,10 +130,18 @@ class PostRepository implements PostRepositoryInterface
 
     }
 
-    public function getPreviousPost($post_id): Post
+    public function getPreviousPost($post_id)
     {
         return Cache::remember('post.previous.' . $post_id, $this->ttl, function () use ($post_id) {
-            return Post::where('id', '>', $post_id)->orderByDesc('id')->first();
+            return Post::where('id', '<', $post_id)->orderByDesc('id')->first();
         });
+    }
+
+    public function getRelatedPosts($post)
+    {
+        $tags = $post->tag->modelKeys();
+        return Post::whereHas('tag', function ($q) use ($tags) {
+            $q->whereIn('tags.id', $tags);
+        })->where('id', '<>', $post->id)->limit(3)->get();
     }
 }

@@ -37,22 +37,11 @@ class PageController extends Controller
     {
         $post = $this->postRepository->getBySlug($slug);
 
-        //Получаем предыдущий пост
-        $previousPost = $this->postRepository->getPreviousPost($post->id);
-        // Получаем следующий пост
-        $nextPost = $this->postRepository->getNextPost($post->id);
-
-        // Получаем 3 поста связанных тегом
-        $tags = $post->tag->modelKeys();
-        $relatedPosts = Post::whereHas('tag', function ($q) use ($tags) {
-            $q->whereIn('tags.id', $tags);
-        })->where('id', '<>', $post->id)->limit(3)->get();
-
         return view('pages.blog_post', [
             'post'=> $post,
-            'previousPost' => $previousPost,
-            'nextPost' => $nextPost,
-            'relatedPosts' => $relatedPosts
+            'previousPost' => $this->postRepository->getPreviousPost($post->id),
+            'nextPost' => $this->postRepository->getNextPost($post->id),
+            'relatedPosts' => $this->postRepository->getRelatedPosts($post)
         ]);
     }
 
