@@ -11,7 +11,7 @@ class Category extends Model
 
     public function post()
     {
-        return $this->belongsToMany('App\Post', 'post_category');
+        return $this->belongsToMany(Post::class, 'category_post');
     }
 
     public function updateQuantity()

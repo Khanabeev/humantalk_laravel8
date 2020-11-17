@@ -22,7 +22,7 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name,
+            'name' => $this->faker->sentence($this->faker->numberBetween(1,2)),
             'image' => 'https://picsum.photos/700/467',
             'slug' => $this->faker->slug,
             'description' => $this->faker->realText(100),
